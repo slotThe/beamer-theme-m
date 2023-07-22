@@ -1,0 +1,166 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{m}
+
+\RequirePackage{qrcode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Load metropolis
+
+\usetheme[ titleformat title=smallcaps%
+         , progressbar=frametitle%
+         , sectionpage=progressbar%
+         , block=fill%
+         ]{metropolis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Mute the white background a bit; people will not notice in a
+%%% typical presentation, and it will be easier on everyone's eyes.
+
+\setbeamercolor{frametitle}{
+  use=normal text,
+  fg=normal text.bg!60!normal text.fg!50!normal text.bg
+}
+
+\setbeamercolor{block title}{
+  use=normal text,
+  fg=normal text.fg,
+  bg=normal text.bg!65!normal text.fg
+}
+
+\setbeamercolor{block body}{
+  use={block title, normal text},
+  bg=block title.bg!70!normal text.bg
+}
+
+\setbeamercolor{background canvas}{
+  use=normal text,
+  bg=normal text.bg!65!normal text.fg!60!normal text.bg
+}
+
+% This is green by default?
+\setbeamercolor{example text}{
+  use=block title,
+  fg=block title.fg,
+  bg=block title.bg
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Fun title page
+
+%%%% Two subtitles
+
+\newcommand*{\msubtitle}[1]{\newcommand*{\msubtitle@}{#1}}
+\newcommand*{\msubtitlelink}[1]{\newcommand*{\msubtitlelink@}{#1}}
+
+\newcommand{\@mGetSubtitle}{
+  \ifx \msubtitle@\undefined
+    \ifx \msubtitlelink@\undefined
+      % Act as \subtitle
+      \ifx\insertsubtitle\@empty
+      \else
+        \usebeamertemplate*{subtitle}
+      \fi
+    \fi
+  \else
+    \subtitle{\msubtitle@%
+      \\[-0.4\baselineskip]%
+      {\footnotesize\msubtitlelink@}%
+      \vspace{0.2cm}}
+    \usebeamertemplate*{subtitle}
+  \fi
+}
+
+%%%% QR code generation
+\newcommand*{\insertqrcode}{}
+\defbeamertemplate*{qr code}{plain}{\insertqrcode}
+\newcommand{\qrCode}[1]{
+  \def\insertqrcode{\qrcode[hyperlink,height=1.6cm]{#1}}
+}
+
+%%%% Title page
+
+\setbeamertemplate{title page}{
+  \begin{minipage}[b][\paperheight]{\textwidth}
+    \ifx\inserttitlegraphic\@empty\else\usebeamertemplate*{title graphic}\fi
+    \vfill%
+    \ifx\inserttitle\@empty\else\usebeamertemplate*{title}\fi
+    % Interplay between subtitle and QR code.
+    \ifx\insertqrcode\@empty
+      \@mGetSubtitle
+    \else
+      \begin{minipage}{0.8\textwidth}
+        \@mGetSubtitle
+      \end{minipage}%
+      \begin{minipage}{0.2\textwidth}
+        \usebeamertemplate*{qr code}
+        \vspace*{-0.03\textheight}
+      \end{minipage}
+    \fi
+    {\centering\ifx\insertdate\@empty\else\usebeamertemplate*{date}\fi}
+    \usebeamertemplate*{title separator}
+    \ifx\beamer@shortauthor\@empty\else\usebeamertemplate*{author}\fi
+    \vfill
+    {\centering\ifx\insertinstitute\@empty\else\usebeamertemplate*{institute}\fi}
+    \vspace*{3mm}
+  \end{minipage}
+}
+
+\setbeamertemplate{date}{
+  \vspace{-0.5\baselineskip}
+  {\footnotesize\insertdate}%
+  \par%
+}
+
+\setbeamertemplate{title}{
+  \raggedright%
+  \linespread{1.0}%
+  {\large\resizebox{\textwidth}{!}{\inserttitle}}%
+  \par%
+  \vspace*{0.5em}
+}
+
+\setbeamertemplate{subtitle}{
+  \raggedright%
+  {\normalsize\insertsubtitle}%
+  \par%
+  \vspace*{0.5em}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% A tiny replacement for the standout key of a frame that does not
+%%% invert the colours (this contrast switch is actually quite hard to
+%%% read on a beamer), and makes the font yet a big bigger.
+
+\setbeamerfont{standout}{size=\LARGE, series=\bfseries}
+
+\define@key{beamerframe}{standout}[true]{%
+  \booltrue{metropolis@standout}
+  \begingroup
+    \setkeys{beamerframe}{c}
+    \setkeys{beamerframe}{plain}
+    \setkeys{beamerframe}{noframenumbering}
+}
+\pretocmd{\beamer@reseteecodes}{%
+  \ifbool{metropolis@standout}{
+    \endgroup
+    \boolfalse{metropolis@standout}
+  }{}
+}{}{}
+\AtBeginEnvironment{beamer@frameslide}{
+  \ifbool{metropolis@standout}{
+    \centering
+    \usebeamerfont{standout}
+  }{}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% No alerted text in handout mode.
+
+\mode<handout>{
+  \setbeamercolor{alerted text}{
+    use=normal text,
+    fg=normal text.fg
+  }
+}
+
+\endinput
