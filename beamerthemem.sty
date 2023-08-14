@@ -1,6 +1,12 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{m}
 
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=BM, prefix=BM@}
+\DeclareBoolOption{blindinglyWhite}
+\DeclareComplementaryOption{readable}{blindinglyWhite}
+\ProcessKeyvalOptions*
+
 \RequirePackage{qrcode}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,33 +22,36 @@
 %%% Mute the white background a bit; people will not notice in a
 %%% typical presentation, and it will be easier on everyone's eyes.
 
-\setbeamercolor{frametitle}{
-  use=normal text,
-  fg=normal text.bg!60!normal text.fg!50!normal text.bg
-}
+\ifBM@blindinglyWhite
+\else
+  \setbeamercolor{frametitle}{
+    use=normal text,
+    fg=normal text.bg!60!normal text.fg!50!normal text.bg
+  }
 
-\setbeamercolor{block title}{
-  use=normal text,
-  fg=normal text.fg,
-  bg=normal text.bg!65!normal text.fg
-}
+  \setbeamercolor{block title}{
+    use=normal text,
+    fg=normal text.fg,
+    bg=normal text.bg!65!normal text.fg
+  }
 
-\setbeamercolor{block body}{
-  use={block title, normal text},
-  bg=block title.bg!70!normal text.bg
-}
+  \setbeamercolor{block body}{
+    use={block title, normal text},
+    bg=block title.bg!70!normal text.bg
+  }
 
-\setbeamercolor{background canvas}{
-  use=normal text,
-  bg=normal text.bg!65!normal text.fg!60!normal text.bg
-}
+  \setbeamercolor{background canvas}{
+    use=normal text,
+    bg=normal text.bg!65!normal text.fg!60!normal text.bg
+  }
 
-% This is green by default?
-\setbeamercolor{example text}{
-  use=block title,
-  fg=block title.fg,
-  bg=block title.bg
-}
+  % This is green by default?
+  \setbeamercolor{example text}{
+    use=block title,
+    fg=block title.fg,
+    bg=block title.bg
+  }
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Fun title page
